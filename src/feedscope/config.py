@@ -38,14 +38,15 @@ class Config:
 
     @property
     def db_path(self) -> Path:
-        p = Path(self.database.get("path", "feedscope.db"))
+        # `or` (not dict.get default) so a null value in YAML still falls back.
+        p = Path(self.database.get("path") or "feedscope.db")
         if not p.is_absolute():
             p = self.path.parent / p
         return p
 
     @property
     def user_agent(self) -> str:
-        return self.fetch.get("user_agent", "feedscope/0.1 (+https://github.com/Minto312/feedscope)")
+        return self.fetch.get("user_agent") or "feedscope/0.1 (+https://github.com/Minto312/feedscope)"
 
 
 def load_config(path: str | Path = "config.yaml") -> Config:

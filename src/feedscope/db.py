@@ -106,7 +106,7 @@ def upsert_article(
 
 def get_unclassified(conn: sqlite3.Connection, limit: int | None = None):
     q = "SELECT * FROM articles WHERE classified_at IS NULL ORDER BY id"
-    if limit:
+    if limit is not None:  # limit=0 means zero rows, not "no limit"
         q += f" LIMIT {int(limit)}"
     return conn.execute(q).fetchall()
 
