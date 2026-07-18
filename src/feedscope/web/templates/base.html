@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>feedscope</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --ink: #14181f; --muted: #6b7480;
+    --line: #e4e7ec; --accent: #2f6fed; --chip: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1216; --card: #171b21; --ink: #e8ebef; --muted: #9aa4b1;
+      --line: #262c34; --accent: #5b8bff; --chip: #222831;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    line-height: 1.6; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg);
+    border-bottom: 1px solid var(--line); }
+  .bar { max-width: 720px; margin: 0 auto; display: flex; align-items: center;
+    gap: 8px; padding: 10px 16px; }
+  .brand { font-weight: 700; letter-spacing: .3px; margin-right: 4px; }
+  .brand a { color: var(--ink); text-decoration: none; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+    border-radius: 999px; text-decoration: none; color: var(--ink);
+    background: var(--chip); border: 1px solid transparent; font-size: 14px; }
+  .tab.active { background: var(--accent); color: #fff; }
+  .tab .n { font-size: 12px; padding: 0 6px; border-radius: 999px;
+    background: rgba(0,0,0,.12); }
+  .tab.active .n { background: rgba(255,255,255,.25); }
+  .spacer { flex: 1; }
+  .lib { color: var(--muted); text-decoration: none; font-size: 14px; }
+  main { max-width: 720px; margin: 0 auto; padding: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 12px; }
+  .card h2 { font-size: 17px; margin: 0 0 6px; line-height: 1.4; }
+  .card h2 a { color: var(--ink); text-decoration: none; }
+  .card h2 a:hover { text-decoration: underline; }
+  .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .src { font-size: 12px; color: var(--muted); background: var(--chip);
+    padding: 2px 8px; border-radius: 999px; }
+  .pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; color: #fff; }
+  .pill.hot { background: #e5484d; } .pill.warm { background: #f0932b; } .pill.cool { background: #6b7480; }
+  .summary { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+  .actions { display: flex; gap: 8px; }
+  .btn { font: inherit; font-size: 13px; cursor: pointer; border: 1px solid var(--line);
+    background: transparent; color: var(--ink); padding: 5px 12px; border-radius: 8px; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.save:hover { border-color: #e5484d; color: #e5484d; }
+  .empty { color: var(--muted); text-align: center; padding: 48px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <span class="brand"><a href="/">feedscope</a></span>
+    <nav class="tabs">
+      {% for c in categories %}
+        <a class="tab {% if current and c.name == current.name %}active{% endif %}"
+           href="/c/{{ c.name }}">{{ c.label }}<span class="n">{{ counts.get(c.name, 0) }}</span></a>
+      {% endfor %}
+    </nav>
+    <span class="spacer"></span>
+    <a class="lib" href="/library">♥ ライブラリ</a>
+  </div>
+</header>
+<main>{% block main %}{% endblock %}</main>
+<script>
+async function act(id, action, category) {
+  const url = `/api/article/${id}/${action}?category=${encodeURIComponent(category || '')}`;
+  const r = await fetch(url, { method: 'POST' });
+  if (r.ok) {
+    const el = document.getElementById('card-' + id);
+    if (el) { el.style.transition = 'opacity .18s, transform .18s';
+      el.style.opacity = 0; el.style.transform = 'translateX(8px)';
+      setTimeout(() => el.remove(), 180); }
+  }
+}
+</script>
+</body>
+</html>

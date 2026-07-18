@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block main %}
+  <h1 style="font-size:18px;margin:4px 0 16px;">♥ ライブラリ（後で読む）</h1>
+  {% if not articles %}
+    <div class="empty">保存した記事はまだありません。フィードで「♥ 保存」すると、ここに永続保存されます（フィードから流れても消えません）。</div>
+  {% endif %}
+  {% for a in articles %}
+    <article class="card" id="card-{{ a['id'] }}">
+      <div class="meta"><span class="src">{{ a['source'] }}</span></div>
+      <h2><a href="{{ a['url'] }}" target="_blank" rel="noopener">{{ a['title'] }}</a></h2>
+      {% if a['summary'] %}<p class="summary">{{ a['summary'] }}</p>{% endif %}
+      <div class="actions">
+        <button class="btn" onclick="act({{ a['id'] }}, 'read', '')">既読にする</button>
+      </div>
+    </article>
+  {% endfor %}
+{% endblock %}

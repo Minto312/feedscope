@@ -104,11 +104,20 @@ def upsert_article(
     return aid, True
 
 
-def get_unclassified(conn: sqlite3.Connection, limit: int | None = None):
-    q = "SELECT * FROM articles WHERE classified_at IS NULL ORDER BY id"
+def get_unclassified(
+    conn: sqlite3.Connection,
+    limit: int | None = None,
+    source_category: str | None = None,
+):
+    q = "SELECT * FROM articles WHERE classified_at IS NULL"
+    params: list = []
+    if source_category:
+        q += " AND source_category=?"
+        params.append(source_category)
+    q += " ORDER BY id"
     if limit is not None:  # limit=0 means zero rows, not "no limit"
         q += f" LIMIT {int(limit)}"
-    return conn.execute(q).fetchall()
+    return conn.execute(q, params).fetchall()
 
 
 def save_scores(conn: sqlite3.Connection, article_id: int, summary: str, scores: list[dict]) -> None:

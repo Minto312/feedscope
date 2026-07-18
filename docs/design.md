@@ -106,9 +106,9 @@ feedback (
 
 ## ロードマップ
 
-1. ~~収集元リストと分野定義を確定~~ ✅ 完了（4分野・生存フィードを検証して確定。[sources.md](sources.md) / `config.example.yaml`）
-2. collector: feedparser で 1 分野ぶん収集して SQLite に入れる最小版（UA/バックオフ込み）
-3. classifier: `codex exec` ラッパ + JSON 検証 + 1 記事採点
-4. web: 分野タブ + 縦カードの最小ビューア（保存/既読/興味なし）
-5. feed: python-feedgen で分野別 RSS 出力
-6. ライブラリ画面 / フィードバック学習 / PWA / discovery 枠 / systemd timer
+1. ~~収集元リストと分野定義を確定~~ ✅（4分野・生存フィードを検証。[sources.md](sources.md) / `config.example.yaml`）
+2. ~~collector: feedparser 収集→SQLite 追記（UA/バックオフ・重複除去）~~ ✅（3,334件で実機確認）
+3. ~~classifier: `codex exec --output-schema` ラッパ + JSON 検証 + 採点~~ ✅（複数分野分類を確認）
+4. ~~web: 分野タブ + 縦カードの最小ビューア（保存/既読/興味なし・独立未読カウント）~~ ✅
+5. feed: python-feedgen で分野別 RSS 出力（互換エクスポート）
+6. フィードバック学習（feedback→profile 自動更新）/ サムネイル取得 / discovery 枠 / PWA / systemd timer

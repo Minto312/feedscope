@@ -55,7 +55,12 @@ def _validate(result: dict, names: list[str]) -> None:
             raise ValueError(f"score out of range: {sc}")
 
 
-def classify(config, limit: int | None = None, verbose: bool = True) -> dict:
+def classify(
+    config,
+    limit: int | None = None,
+    source_category: str | None = None,
+    verbose: bool = True,
+) -> dict:
     conn = connect(config.db_path)
     init_schema(conn)
     cats = config.categories
@@ -66,7 +71,7 @@ def classify(config, limit: int | None = None, verbose: bool = True) -> dict:
     command = cls.get("command", "codex")
     model = cls.get("model") or None
 
-    rows = get_unclassified(conn, limit=limit)
+    rows = get_unclassified(conn, limit=limit, source_category=source_category)
     done = failed = 0
 
     for a in rows:
