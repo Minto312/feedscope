@@ -8,10 +8,15 @@ license = { text = "MIT" }
 authors = [{ name = "Minto312" }]
 dependencies = [
     "feedparser",
-    "feedgen",
-    "flask",
     "pyyaml",
 ]
+
+[project.optional-dependencies]
+web = ["flask"]
+feed = ["feedgen"]
+
+[project.scripts]
+feedscope = "feedscope.cli:main"
 
 [build-system]
 requires = ["hatchling"]
