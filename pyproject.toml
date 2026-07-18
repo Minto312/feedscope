@@ -1,0 +1,21 @@
+[project]
+name = "feedscope"
+version = "0.0.1"
+description = "Personalized, non-destructive article discovery feed — a self-hosted Google Discover alternative"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Minto312" }]
+dependencies = [
+    "feedparser",
+    "feedgen",
+    "flask",
+    "pyyaml",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/feedscope"]

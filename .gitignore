@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Environment
+.env
+
+# feedscope: local config & data (per-user, not tracked)
+config.yaml
+*.db
+*.sqlite
+*.sqlite3
+data/

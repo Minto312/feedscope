@@ -1,0 +1,147 @@
+# feedscope 設定テンプレ
+#   cp config.example.yaml config.yaml して自分用に編集する（config.yaml は gitignore）。
+#
+# 収録ソースは 2026-07-18 に develop から実際に curl 検証した「生存フィードのみ」。
+# 検証結果と取得時の注意（UA 必須・Reddit 429 対策など）は docs/sources.md 参照。
+#
+# 分野(categories)は独立チャンネル。各分野は独立した未読・閾値・嗜好プロファイル・
+# 件数上限を持ち、片方を読んでも他方は減らない（Discover の「枠の奪い合い」対策）。
+#
+# source type:
+#   rss    : url に RSS/Atom/RDF の実 URL
+#   reddit : url に https://www.reddit.com/r/<sub>/.rss （※ブラウザ UA 必須・429 多発、要スロットル）
+#   hnrss  : url に https://hnrss.org/... （points/q でフィルタ済み）
+#   gnews  : query に日本語キーワード。collector が
+#            https://news.google.com/rss/search?q=<enc>&hl=ja&gl=JP&ceid=JP:ja を組み立てる
+
+categories:
+  - name: engineer
+    label: エンジニア
+    threshold: 6            # LLM 興味度(0-10) がこの値以上をフィード表示
+    max_items: 60
+    profile: |
+      実装・設計・新しい言語/ツール/OSS・クラウド/インフラ・AI開発に関心。
+      入門すぎる記事、求人・宣伝・イベント告知だけの記事は低め。
+      （フィードバックから自動更新される初期値）
+    sources:
+      - { type: rss,    lang: ja, name: "はてブ テクノロジー(人気)", url: "https://b.hatena.ne.jp/hotentry/it.rss" }
+      - { type: rss,    lang: ja, name: "Publickey",                url: "https://www.publickey1.jp/atom.xml" }
+      - { type: rss,    lang: ja, name: "gihyo.jp",                 url: "https://gihyo.jp/feed/atom" }
+      - { type: rss,    lang: ja, name: "Zenn",                     url: "https://zenn.dev/feed" }
+      - { type: rss,    lang: ja, name: "Qiita 人気",               url: "https://qiita.com/popular-items/feed" }
+      - { type: rss,    lang: ja, name: "ASCII.jp",                 url: "https://ascii.jp/rss.xml" }
+      - { type: rss,    lang: ja, name: "Think IT",                 url: "https://thinkit.co.jp/rss.xml" }
+      - { type: rss,    lang: ja, name: "InfoQ Japan",              url: "https://feed.infoq.com/jp/" }
+      - { type: rss,    lang: ja, name: "@IT",                      url: "https://rss.itmedia.co.jp/rss/2.0/ait.xml" }
+      - { type: rss,    lang: en, name: "Lobsters",                 url: "https://lobste.rs/rss" }
+      - { type: hnrss,  lang: en, name: "HN programming(>=50)",     url: "https://hnrss.org/newest?q=programming&points=50" }
+      - { type: hnrss,  lang: en, name: "HN frontpage",            url: "https://hnrss.org/frontpage" }
+      - { type: reddit, lang: en, name: "r/programming",           url: "https://www.reddit.com/r/programming/.rss" }
+      - { type: reddit, lang: en, name: "r/webdev",                url: "https://www.reddit.com/r/webdev/.rss" }
+      - { type: gnews,  lang: ja, name: "GNews ソフトウェア開発",   query: "ソフトウェア開発 OR プログラミング" }
+      - { type: gnews,  lang: ja, name: "GNews Web/フロントエンド",  query: "Web開発 フロントエンド" }
+      - { type: gnews,  lang: ja, name: "GNews 生成AI開発",         query: "生成AI 開発 エンジニア" }
+      # - { type: rss, lang: ja, name: "CodeZine", url: "https://codezine.jp/rss/new/20/index.xml" }  # 検証時 502(翔泳社 混雑中)。URL は正・後で再有効化
+
+  - name: gadget
+    label: ガジェット
+    threshold: 6
+    max_items: 60
+    profile: |
+      スマホ・PC・ガジェット新製品・レビュー・自作PC・周辺機器に関心。
+      同一製品の重複ニュースやセール告知だけの記事は低め。
+    sources:
+      - { type: rss,    lang: ja, name: "GIZMODO Japan",       url: "https://www.gizmodo.jp/feed/index.xml" }
+      - { type: rss,    lang: ja, name: "ITmedia Mobile",      url: "https://rss.itmedia.co.jp/rss/2.0/mobile.xml" }
+      - { type: rss,    lang: ja, name: "ITmedia PC USER",     url: "https://rss.itmedia.co.jp/rss/2.0/pcuser.xml" }
+      - { type: rss,    lang: ja, name: "Impress PC Watch",    url: "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf" }
+      - { type: rss,    lang: ja, name: "Impress ケータイWatch", url: "https://k-tai.watch.impress.co.jp/data/rss/1.0/ktw/feed.rdf" }
+      - { type: rss,    lang: ja, name: "Impress AV Watch",    url: "https://av.watch.impress.co.jp/data/rss/1.0/avw/feed.rdf" }
+      - { type: rss,    lang: ja, name: "ガジェット通信",       url: "https://getnews.jp/feed" }
+      - { type: rss,    lang: ja, name: "roomie",              url: "https://www.roomie.jp/feed/" }
+      - { type: rss,    lang: en, name: "The Verge",           url: "https://www.theverge.com/rss/index.xml" }
+      - { type: rss,    lang: en, name: "Engadget",            url: "https://www.engadget.com/rss.xml" }
+      - { type: reddit, lang: en, name: "r/gadgets",           url: "https://www.reddit.com/r/gadgets/.rss" }
+      - { type: hnrss,  lang: en, name: "HN gadget",           url: "https://hnrss.org/newest?q=gadget&points=50" }
+      - { type: hnrss,  lang: en, name: "HN smartphone",       url: "https://hnrss.org/newest?q=smartphone&points=50" }
+      - { type: gnews,  lang: ja, name: "GNews ガジェット新製品", query: "ガジェット 新製品" }
+      # - { type: rss, lang: ja, name: "Impress Watch 総合", url: "https://www.watch.impress.co.jp/data/rss/1.0/ipw/feed.rdf" }  # PC/ケータイ/AV Watch と重複。全部欲しければ有効化
+      # - { type: rss, lang: ja, name: "ASCII.jp", url: "https://ascii.jp/rss.xml" }  # engineer と重複
+      # - { type: reddit, lang: en, name: "r/Android", url: "https://www.reddit.com/r/Android/.rss" }  # 検証時 429(IP制限)。スロットル/認証で有効化
+      # - { type: reddit, lang: en, name: "r/apple",   url: "https://www.reddit.com/r/apple/.rss" }    # 同上 429
+
+  - name: anime_game
+    label: アニメ・ゲーム
+    threshold: 5
+    max_items: 60
+    profile: |
+      新作アニメ・ゲームの発表/レビュー・業界動向・開発の話に関心。
+      グッズ販売のみ・ネタバレ全開の記事は低め。
+    sources:
+      - { type: rss,   lang: ja, name: "アニメ!アニメ!",       url: "https://animeanime.jp/rss/index.rdf" }
+      - { type: rss,   lang: ja, name: "4Gamer.net",          url: "https://www.4gamer.net/rss/index.xml" }
+      - { type: rss,   lang: ja, name: "Game*Spark",          url: "https://www.gamespark.jp/rss/index.rdf" }
+      - { type: rss,   lang: ja, name: "AUTOMATON",           url: "https://automaton-media.com/feed/" }
+      - { type: rss,   lang: ja, name: "電ファミニコゲーマー",  url: "https://news.denfaminicogamer.jp/feed" }
+      - { type: rss,   lang: ja, name: "IGN Japan",           url: "https://jp.ign.com/feed.xml" }
+      - { type: rss,   lang: en, name: "Anime News Network",  url: "https://www.animenewsnetwork.com/all/rss.xml" }
+      - { type: rss,   lang: en, name: "Gematsu",             url: "https://www.gematsu.com/feed" }
+      - { type: rss,   lang: en, name: "Polygon",             url: "https://www.polygon.com/rss/index.xml" }
+      - { type: gnews, lang: ja, name: "GNews ファミ通",       query: "ファミ通" }
+      - { type: gnews, lang: ja, name: "GNews アニメ新作",     query: "アニメ 新作" }
+      - { type: gnews, lang: ja, name: "GNews ゲーム新作",     query: "ゲーム 新作" }
+      # - { type: hnrss, lang: en, name: "HN game engine", url: "https://hnrss.org/newest?q=game+engine&points=50" }  # 技術寄り・周辺的
+      # - { type: rss, lang: en, name: "ANN Newsroom", url: "https://www.animenewsnetwork.com/newsroom/rss.xml" }  # all と重複
+      # r/anime r/Games r/gaming r/JRPG : 検証時いずれも 429(IP制限)で未確認。スロットル/認証で有効化
+      # - { type: reddit, lang: en, name: "r/anime",  url: "https://www.reddit.com/r/anime/.rss" }
+      # - { type: reddit, lang: en, name: "r/Games",  url: "https://www.reddit.com/r/Games/.rss" }
+      # - { type: reddit, lang: en, name: "r/gaming", url: "https://www.reddit.com/r/gaming/.rss" }
+
+  - name: politics_economy
+    label: 政治・経済
+    threshold: 6
+    max_items: 60
+    profile: |
+      国内政治・経済政策・金融/市場・企業決算・国際情勢に関心。
+      芸能寄りの政治ゴシップ・スポーツは低め。
+    sources:
+      - { type: rss,   lang: ja, name: "NHK 主要",           url: "https://www3.nhk.or.jp/rss/news/cat0.xml" }
+      - { type: rss,   lang: ja, name: "NHK 政治",           url: "https://www3.nhk.or.jp/rss/news/cat4.xml" }
+      - { type: rss,   lang: ja, name: "NHK 経済",           url: "https://www3.nhk.or.jp/rss/news/cat5.xml" }
+      - { type: rss,   lang: ja, name: "NHK 国際",           url: "https://www3.nhk.or.jp/rss/news/cat6.xml" }
+      - { type: rss,   lang: ja, name: "東洋経済オンライン",   url: "https://toyokeizai.net/list/feed/rss" }
+      - { type: rss,   lang: ja, name: "ダイヤモンド・オンライン", url: "https://diamond.jp/list/feed/rss/dol" }
+      - { type: rss,   lang: ja, name: "時事通信 ランキング",  url: "https://www.jiji.com/rss/ranking.rdf" }
+      - { type: rss,   lang: en, name: "WSJ World News",     url: "https://feeds.a.dj.com/rss/RSSWorldNews.xml" }
+      - { type: rss,   lang: en, name: "NYT Economy",        url: "https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml" }
+      - { type: gnews, lang: ja, name: "GNews 政治",          query: "政治" }
+      - { type: gnews, lang: ja, name: "GNews 経済/金融政策",  query: "経済 金融政策" }
+      - { type: gnews, lang: ja, name: "GNews ビジネス/決算",  query: "ビジネス 決算" }
+      - { type: gnews, lang: ja, name: "GNews 国際情勢",       query: "国際情勢" }
+      - { type: gnews, lang: ja, name: "GNews ロイター/ブルームバーグ", query: "ロイター OR ブルームバーグ" }
+      # - { type: rss, lang: ja, name: "日経(非公式ミラー)", url: "https://assets.wor.jp/rss/rdf/nikkei/news.rdf" }  # 日経は公式無料RSS無し。非公式・全カテゴリ混在。自己責任で有効化
+      # - { type: hnrss, lang: en, name: "HN economy(>=100)", url: "https://hnrss.org/newest?q=economy&points=100" }  # 周辺的
+      # r/economics r/geopolitics : 検証時 429 で未確認
+      # - { type: reddit, lang: en, name: "r/economics",   url: "https://www.reddit.com/r/economics/.rss" }
+      # - { type: reddit, lang: en, name: "r/geopolitics", url: "https://www.reddit.com/r/geopolitics/.rss" }
+
+# 記事分類に使う codex 設定
+classifier:
+  command: "codex"           # `codex exec` を呼び出すコマンド名
+  model: "gpt-5.4"           # codex exec --model に渡すモデル
+  max_retries: 2             # JSON パース/検証に失敗したときのリトライ上限
+  discovery_ratio: 0.1       # セレンディピティ用に低スコア/ランダム記事を混ぜる割合
+
+# 収集の共通設定（詳細は docs/sources.md）
+fetch:
+  user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+  per_request_delay_ms: 500  # ソース間ディレイ（Reddit 429 対策）
+  max_retries: 3             # 429/5xx は指数バックオフでリトライ
+
+# 収集スケジュール（実際の起動は systemd timer / cron 側で制御。ここはメモ）
+schedule:
+  interval_minutes: 20
+
+# データベース
+database:
+  path: "feedscope.db"
