@@ -1,0 +1,17 @@
+[Unit]
+Description=feedscope: web viewer
+Documentation=https://github.com/Minto312/feedscope
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/karinto/workspace/feedscope
+Environment=PATH=/home/karinto/.local/bin:/usr/local/bin:/usr/bin:/bin
+# 0.0.0.0 so it is reachable over the tailnet / LAN, not just localhost.
+ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml serve --host 0.0.0.0 --port 5057
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
