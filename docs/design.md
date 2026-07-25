@@ -111,4 +111,5 @@ feedback (
 3. ~~classifier: `codex exec --output-schema` ラッパ + JSON 検証 + 採点~~ ✅（複数分野分類を確認）
 4. ~~web: 分野タブ + 縦カードの最小ビューア（保存/既読/興味なし・独立未読カウント）~~ ✅
 5. feed: python-feedgen で分野別 RSS 出力（互換エクスポート）
-6. フィードバック学習（feedback→profile 自動更新）/ サムネイル取得 / discovery 枠 / PWA / systemd timer
+6. ~~collect の定期実行（systemd user timer, 20分毎）~~ ✅（[deploy/](deploy/README.md)。classify は時間/クォータを使うため意図的に手動のまま）
+7. フィードバック学習（feedback→profile 自動更新）/ サムネイル取得 / discovery 枠 / PWA / classify のバッチ自動化

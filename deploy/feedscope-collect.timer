@@ -1,0 +1,14 @@
+[Unit]
+Description=Run feedscope collect every 20 minutes
+
+[Timer]
+# Fixed 20-minute slots (matches schedule.interval_minutes in config.yaml).
+OnCalendar=*:0/20
+# Spread the load so every slot doesn't hit all sources at the exact same second.
+RandomizedDelaySec=2min
+# Catch up once after the machine (or user session) was down.
+Persistent=true
+Unit=feedscope-collect.service
+
+[Install]
+WantedBy=timers.target

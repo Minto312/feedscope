@@ -1,0 +1,14 @@
+[Unit]
+Description=feedscope: collect articles from configured sources
+Documentation=https://github.com/Minto312/feedscope
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/karinto/workspace/feedscope
+ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml collect
+# Fetching 57 sources with an inter-source delay takes a few minutes.
+TimeoutStartSec=20min
+Nice=10
+IOSchedulingClass=idle

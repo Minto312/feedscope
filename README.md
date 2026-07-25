@@ -86,7 +86,13 @@ uv run feedscope serve                    # http://127.0.0.1:5000 でビュー�
 ```
 
 `classify` は 1 件あたり数秒・ChatGPT クォータを使うため `--limit` / `--source-category` で小分けにする。
-collect は systemd timer 等で定期実行する想定。
+
+`collect` の定期実行は systemd user timer を同梱（[deploy/](deploy/README.md)）:
+
+```sh
+cp deploy/feedscope-collect.{service,timer} ~/.config/systemd/user/
+systemctl --user daemon-reload && systemctl --user enable --now feedscope-collect.timer
+```
 
 ## ステータス
 
