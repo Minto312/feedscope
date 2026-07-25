@@ -76,10 +76,12 @@ def classify(
     if per_category:
         # Fair share: take N pending articles from each source category so every
         # tab fills up, instead of one category monopolising the batch.
+        # "shared" holds pages sent from the phone's share sheet — include it so
+        # those get a summary too.
         rows = []
-        for c in cats:
+        for name in [c.name for c in cats] + ["shared"]:
             rows.extend(
-                get_unclassified(conn, limit=per_category, source_category=c.name, order=order)
+                get_unclassified(conn, limit=per_category, source_category=name, order=order)
             )
     else:
         rows = get_unclassified(

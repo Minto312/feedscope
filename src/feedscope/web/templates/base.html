@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>feedscope</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#2f6fed">
+<link rel="apple-touch-icon" href="/static/icon-192.png">
 <style>
   :root {
     --bg: #f6f7f9; --card: #ffffff; --ink: #14181f; --muted: #6b7480;
@@ -35,7 +38,7 @@
     background: rgba(0,0,0,.12); }
   .tab.active .n { background: rgba(255,255,255,.25); }
   .spacer { flex: 1; }
-  .lib { color: var(--muted); text-decoration: none; font-size: 14px; }
+  .lib { color: var(--muted); text-decoration: none; font-size: 14px; white-space: nowrap; }
   main { max-width: 720px; margin: 0 auto; padding: 16px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
     padding: 14px 16px; margin-bottom: 12px; }
@@ -67,11 +70,15 @@
       {% endfor %}
     </nav>
     <span class="spacer"></span>
+    <a class="lib" href="/add">＋</a>
     <a class="lib" href="/library">♥ ライブラリ</a>
   </div>
 </header>
 <main>{% block main %}{% endblock %}</main>
 <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
 async function act(id, action, category) {
   const url = `/api/article/${id}/${action}?category=${encodeURIComponent(category || '')}`;
   const r = await fetch(url, { method: 'POST' });

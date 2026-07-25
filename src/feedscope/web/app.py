@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, abort, jsonify, redirect, render_template, request, send_from_directory, url_for
 
 from ..db import connect, init_schema
 from . import queries
+from .share import extract_url, save_shared
 
 
 def create_app(config) -> Flask:
@@ -54,6 +55,47 @@ def create_app(config) -> Flask:
             counts=counts,
             articles=articles,
         )
+
+    @app.route("/add", methods=["GET", "POST"])
+    def add():
+        """Web Share Target endpoint (also a plain form for desktop/bookmarklet).
+
+        Android usually delivers the link in `text`, iOS in `url` — accept both.
+        """
+        src = request.form if request.method == "POST" else request.args
+        url = extract_url(src.get("url"), src.get("text"))
+        title = (src.get("title") or "").strip()
+
+        conn = connect(config.db_path)
+        try:
+            init_schema(conn)
+            counts = queries.category_counts(conn, config.categories)
+            if not url:
+                error = "URL が見つかりませんでした" if src else None
+                return render_template(
+                    "add.html", saved=None, error=error,
+                    categories=config.categories, counts=counts,
+                )
+            result = save_shared(conn, url, title=title, note=src.get("text"))
+        finally:
+            conn.close()
+
+        if request.headers.get("Accept", "").startswith("application/json"):
+            return jsonify(result)
+        return render_template(
+            "add.html", saved=result, url=url, error=None,
+            categories=config.categories, counts=counts,
+        )
+
+    @app.route("/manifest.webmanifest")
+    def manifest():
+        return send_from_directory(app.static_folder, "manifest.webmanifest",
+                                   mimetype="application/manifest+json")
+
+    @app.route("/sw.js")
+    def service_worker():
+        # Must be served from the root so its scope covers the whole app.
+        return send_from_directory(app.static_folder, "sw.js", mimetype="text/javascript")
 
     @app.route("/api/article/<int:article_id>/<action>", methods=["POST"])
     def article_action(article_id, action):

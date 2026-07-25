@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block main %}
+  {% if saved %}
+    <article class="card">
+      <div class="meta"><span class="src">共有</span>
+        {% if saved.already_saved %}<span class="pill cool">保存済み</span>
+        {% else %}<span class="pill hot">♥ 保存しました</span>{% endif %}
+      </div>
+      <h2><a href="{{ url }}" target="_blank" rel="noopener">{{ saved.title }}</a></h2>
+      <p class="summary">ライブラリに永続保存しました。フィードが更新されても消えません。</p>
+      <div class="actions">
+        <a class="btn" href="/library">♥ ライブラリを見る</a>
+        <a class="btn" href="/">フィードへ</a>
+      </div>
+    </article>
+  {% else %}
+    <article class="card">
+      <h2>URL を保存</h2>
+      {% if error %}<p class="summary" style="color:#e5484d;">{{ error }}</p>{% endif %}
+      <p class="summary">スマホの共有シートから送るか、ここに URL を貼り付けてライブラリに保存します。</p>
+      <form method="post" action="/add">
+        <input name="url" type="url" required placeholder="https://example.com/article"
+               style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);
+                      background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px;">
+        <input name="title" type="text" placeholder="タイトル（空なら自動取得）"
+               style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);
+                      background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px;">
+        <button class="btn save" type="submit">♥ 保存</button>
+      </form>
+    </article>
+    <article class="card">
+      <h2 style="font-size:15px;">スマホの共有シートに出すには</h2>
+      <p class="summary">
+        HTTPS でこのページを開き、ブラウザのメニューから「ホーム画面に追加 / アプリをインストール」を実行します。
+        インストール後、他アプリの共有メニューに <b>feedscope</b> が現れます。
+      </p>
+    </article>
+  {% endif %}
+{% endblock %}
