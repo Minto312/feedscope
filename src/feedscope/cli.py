@@ -20,6 +20,10 @@ def main(argv=None) -> None:
     pc = sub.add_parser("classify", help="classify unclassified articles via codex")
     pc.add_argument("--limit", type=int, default=None, help="max articles to classify")
     pc.add_argument("--source-category", default=None, help="only classify articles from this source category")
+    pc.add_argument("--per-category", type=int, default=None,
+                    help="classify N pending articles from EACH source category (fair share)")
+    pc.add_argument("--order", choices=["newest", "oldest"], default="newest",
+                    help="which pending articles to take first (default: newest)")
     ps = sub.add_parser("serve", help="run the web viewer")
     ps.add_argument("--host", default="127.0.0.1")
     ps.add_argument("--port", type=int, default=5000)
@@ -43,9 +47,22 @@ def main(argv=None) -> None:
         )
 
     elif args.cmd == "classify":
-        print(f"classifying (limit={args.limit}, source_category={args.source_category}) ...")
-        r = classify(cfg, limit=args.limit, source_category=args.source_category)
+        print(
+            f"classifying (limit={args.limit}, per_category={args.per_category}, "
+            f"source_category={args.source_category}, order={args.order}) ..."
+        )
+        r = classify(
+            cfg,
+            limit=args.limit,
+            source_category=args.source_category,
+            per_category=args.per_category,
+            order=args.order,
+        )
         print(f"\nclassify done: {r['classified']} ok / {r['failed']} failed / {r['total']} pending")
+        # Exit non-zero when nothing succeeded but work was attempted, so a
+        # scheduler (systemd) surfaces the failure instead of reporting success.
+        if r["failed"] and not r["classified"]:
+            raise SystemExit(1)
 
     elif args.cmd == "serve":
         from .web.app import create_app

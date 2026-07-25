@@ -1,0 +1,13 @@
+[Unit]
+Description=Run feedscope classify every 30 minutes (small batch)
+
+[Timer]
+# Offset from the :00/:20/:40 collect slots so the two don't start together.
+OnCalendar=*:10/30
+RandomizedDelaySec=2min
+# Deliberately NOT Persistent: skipping a classify slot is harmless, and
+# catching up would fire an extra codex batch right after downtime.
+Unit=feedscope-classify.service
+
+[Install]
+WantedBy=timers.target

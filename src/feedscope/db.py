@@ -108,13 +108,16 @@ def get_unclassified(
     conn: sqlite3.Connection,
     limit: int | None = None,
     source_category: str | None = None,
+    order: str = "newest",
 ):
+    """Pending articles. Default order is newest-first: a discovery feed wants
+    today's news classified before a week-old backlog."""
     q = "SELECT * FROM articles WHERE classified_at IS NULL"
     params: list = []
     if source_category:
         q += " AND source_category=?"
         params.append(source_category)
-    q += " ORDER BY id"
+    q += " ORDER BY id DESC" if order == "newest" else " ORDER BY id"
     if limit is not None:  # limit=0 means zero rows, not "no limit"
         q += f" LIMIT {int(limit)}"
     return conn.execute(q, params).fetchall()

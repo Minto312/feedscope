@@ -85,13 +85,15 @@ uv run feedscope classify --limit 20      # codex で未分類記事を採点（
 uv run feedscope serve                    # http://127.0.0.1:5000 でビューアを起動
 ```
 
-`classify` は 1 件あたり数秒・ChatGPT クォータを使うため `--limit` / `--source-category` で小分けにする。
+`classify` は 1 件あたり数秒・ChatGPT クォータを使うため小分けにする
+（`--per-category N` で分野ごとに N 件ずつ、`--order newest` で新着優先）。
 
-`collect` の定期実行は systemd user timer を同梱（[deploy/](deploy/README.md)）:
+定期実行用の systemd user timer を同梱（[deploy/](deploy/README.md)）— collect 20分毎 / classify 30分毎:
 
 ```sh
-cp deploy/feedscope-collect.{service,timer} ~/.config/systemd/user/
-systemctl --user daemon-reload && systemctl --user enable --now feedscope-collect.timer
+cp deploy/feedscope-{collect,classify}.{service,timer} ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now feedscope-collect.timer feedscope-classify.timer
 ```
 
 ## ステータス

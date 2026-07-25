@@ -59,6 +59,8 @@ def classify(
     config,
     limit: int | None = None,
     source_category: str | None = None,
+    per_category: int | None = None,
+    order: str = "newest",
     verbose: bool = True,
 ) -> dict:
     conn = connect(config.db_path)
@@ -71,7 +73,18 @@ def classify(
     command = cls.get("command", "codex")
     model = cls.get("model") or None
 
-    rows = get_unclassified(conn, limit=limit, source_category=source_category)
+    if per_category:
+        # Fair share: take N pending articles from each source category so every
+        # tab fills up, instead of one category monopolising the batch.
+        rows = []
+        for c in cats:
+            rows.extend(
+                get_unclassified(conn, limit=per_category, source_category=c.name, order=order)
+            )
+    else:
+        rows = get_unclassified(
+            conn, limit=limit, source_category=source_category, order=order
+        )
     done = failed = 0
 
     for a in rows:

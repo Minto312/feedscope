@@ -1,0 +1,19 @@
+[Unit]
+Description=feedscope: classify pending articles with codex (rate-limited batch)
+Documentation=https://github.com/Minto312/feedscope
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/karinto/workspace/feedscope
+# systemd --user starts with a minimal PATH that lacks ~/.local/bin, where the
+# codex CLI lives. Without this the whole batch fails with "No such file: codex".
+Environment=PATH=/home/karinto/.local/bin:/usr/local/bin:/usr/bin:/bin
+# Fair share across categories (5 x 4 = 20 articles per run), newest first so
+# today's news gets ranked before the older backlog.
+# codex costs time and ChatGPT quota — keep the batch small and tune here.
+ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml classify --per-category 5 --order newest
+# ~9s per article; cap a stuck/retrying run rather than letting it pile up.
+TimeoutStartSec=25min
+Nice=10
