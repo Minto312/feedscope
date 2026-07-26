@@ -188,6 +188,13 @@ def save_shared(conn, url: str, title: str | None = None, note: str | None = Non
         "ON CONFLICT(article_id) DO UPDATE SET state='saved'",
         (article_id,),
     )
+    # Record that this came from the share sheet. Kept separate from `source` so a
+    # already-collected article keeps its original outlet (e.g. AUTOMATON) and just
+    # gains a "shared" marker.
+    conn.execute(
+        "UPDATE articles SET shared_at = COALESCE(shared_at, ?) WHERE id = ?",
+        (now_iso(), article_id),
+    )
     conn.commit()
     return {
         "article_id": article_id,

@@ -38,7 +38,7 @@ def feed_articles(conn, category: str, threshold: float, limit: int):
 
 def saved_articles(conn, limit: int = 200):
     return conn.execute(
-        "SELECT a.id, a.title, a.url, a.source, a.summary "
+        "SELECT a.id, a.title, a.url, a.source, a.summary, a.shared_at "
         "FROM articles a JOIN states st ON st.article_id = a.id "
         "WHERE st.state = 'saved' ORDER BY a.id DESC LIMIT ?",
         (int(limit),),

@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS articles (
   fetched_at TEXT,
   content TEXT,
   summary TEXT,
-  classified_at TEXT
+  classified_at TEXT,
+  shared_at TEXT
 );
 CREATE TABLE IF NOT EXISTS scores (
   article_id INTEGER,
@@ -61,7 +62,15 @@ def connect(path: str | Path) -> sqlite3.Connection:
 
 def init_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA)
+    _migrate(conn)
     conn.commit()
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Add columns introduced after a database was first created."""
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(articles)")}
+    if "shared_at" not in cols:
+        conn.execute("ALTER TABLE articles ADD COLUMN shared_at TEXT")
 
 
 def sync_categories(conn: sqlite3.Connection, categories) -> None:

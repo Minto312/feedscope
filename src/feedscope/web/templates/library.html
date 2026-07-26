@@ -6,7 +6,12 @@
   {% endif %}
   {% for a in articles %}
     <article class="card" id="card-{{ a['id'] }}">
-      <div class="meta"><span class="src">{{ a['source'] }}</span></div>
+      <div class="meta">
+        <span class="src">{{ a['source'] }}</span>
+        {% if a['shared_at'] and a['source'] != '共有' %}
+          <span class="pill shared">♥ 共有</span>
+        {% endif %}
+      </div>
       <h2><a href="{{ a['url'] }}" target="_blank" rel="noopener">{{ a['title'] }}</a></h2>
       {% if a['summary'] %}<p class="summary">{{ a['summary'] }}</p>{% endif %}
       <div class="actions">
