@@ -96,6 +96,24 @@ systemctl --user daemon-reload
 systemctl --user enable --now feedscope-collect.timer feedscope-classify.timer
 ```
 
+## スマホから記事を送る（共有）
+
+`/add` が共有の受け口。ライブラリ（後で読む）に永続保存される。
+
+| 端末 | 方法 | 状態 |
+|---|---|---|
+| **Android (Chrome)** | PWA をインストールすると OS の共有シートに `feedscope` が出る（Web Share Target） | ✅ 対応 |
+| **iPhone (Safari)** | iOS は全ブラウザが Web Share Target 非対応。**ショートカットApp**の「共有シートに表示」から `POST /add`（フォーム `url=`）を叩く | ✅ 代替手段で対応 |
+| PC / その他 | `/add` ページに URL を貼り付け | ✅ |
+
+手順はアプリ内の `/add` ページに端末別で載せてある。
+共有された URL は、既に収集済みの記事と一致すれば新規作成せずライブラリへ移動する。
+
+> **セキュリティ**: `/add` は無認証（tailnet 内なら誰でも叩ける）で任意 URL を受け取るため、
+> タイトル取得は globally-routable なホストのみに限定し（loopback / RFC1918 / link-local /
+> CGNAT=tailnet / multicast を拒否）、リダイレクトは各ホップを再検証しながら手動追従する。
+> 取得はリクエストスレッド外の小さなプールで行い、遅い URL がサーバを占有しないようにしている。
+
 ## ステータス
 
 🚧 **開発中。** collector / classifier / web ビューア（分野タブ＋縦カード）まで動作。

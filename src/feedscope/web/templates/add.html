@@ -7,7 +7,10 @@
         {% else %}<span class="pill hot">♥ 保存しました</span>{% endif %}
       </div>
       <h2><a href="{{ url }}" target="_blank" rel="noopener">{{ saved.title }}</a></h2>
-      <p class="summary">ライブラリに永続保存しました。フィードが更新されても消えません。</p>
+      <p class="summary">
+        ライブラリに永続保存しました。フィードが更新されても消えません。
+        {% if saved.fetching_title %}<br>タイトルは取得中です（少し後にライブラリで反映されます）。{% endif %}
+      </p>
       <div class="actions">
         <a class="btn" href="/library">♥ ライブラリを見る</a>
         <a class="btn" href="/">フィードへ</a>
@@ -29,10 +32,31 @@
       </form>
     </article>
     <article class="card">
-      <h2 style="font-size:15px;">スマホの共有シートに出すには</h2>
+      <h2 style="font-size:15px;">Android（Chrome）— 共有シートに出す</h2>
       <p class="summary">
-        HTTPS でこのページを開き、ブラウザのメニューから「ホーム画面に追加 / アプリをインストール」を実行します。
+        Chrome のメニューから「<b>アプリをインストール</b> / ホーム画面に追加」を実行するだけです。
         インストール後、他アプリの共有メニューに <b>feedscope</b> が現れます。
+        （未インストールだと共有シートには出ません）
+      </p>
+    </article>
+    <article class="card">
+      <h2 style="font-size:15px;">iPhone（Safari）— ショートカットApp を使う</h2>
+      <p class="summary">
+        iOS は Safari を含む全ブラウザが Web Share Target に非対応のため、
+        ショートカットApp で共有シートに追加します（1 回だけの設定）。
+      </p>
+      <ol class="summary" style="padding-left:1.2em;">
+        <li>ショートカットApp →「＋」で新規作成</li>
+        <li>画面上部の情報アイコン →「<b>共有シートに表示</b>」をオン →
+            受け取るタイプを <b>URL</b> のみにする</li>
+        <li>アクション「<b>URL の内容を取得</b>」を追加</li>
+        <li>URL 欄に <code>{{ request.url_root }}add</code> を入力</li>
+        <li>「詳細を表示」→ 方法を <b>POST</b>、本文を <b>フォーム</b> にする</li>
+        <li>フィールドを追加: キー <code>url</code>、値に「<b>ショートカットの入力</b>」を指定</li>
+        <li>名前を「feedscope に保存」にして完了</li>
+      </ol>
+      <p class="summary">
+        以後、Safari の共有シートから「feedscope に保存」でライブラリに入ります。
       </p>
     </article>
   {% endif %}

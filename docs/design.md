@@ -112,4 +112,18 @@ feedback (
 4. ~~web: 分野タブ + 縦カードの最小ビューア（保存/既読/興味なし・独立未読カウント）~~ ✅
 5. feed: python-feedgen で分野別 RSS 出力（互換エクスポート）
 6. ~~collect / classify の定期実行（systemd user timer）~~ ✅（[deploy/](deploy/README.md)。collect 20分毎、classify 30分毎に各分野5件ずつ＝20件を新着優先で採点）
-7. フィードバック学習（feedback→profile 自動更新）/ サムネイル取得 / discovery 枠 / PWA
+7. ~~スマホからの共有（PWA Web Share Target + iOS ショートカット代替）~~ ✅（`/add`。Android Chrome は実機で動作確認済み）
+8. フィードバック学習（feedback→profile 自動更新）/ サムネイル取得 / discovery 枠
+
+## 共有受け口 `/add` のセキュリティ設計
+
+`/add` は無認証で攻撃者が選んだ URL を受け取るため、タイトル取得は次の前提で書かれている:
+
+- **allowlist 方式**: `ipaddress.is_global` を満たすユニキャストのみ fetch。loopback・RFC1918・
+  link-local（クラウドメタデータ）・**CGNAT 100.64/10（= tailnet 帯）** を拒否。
+  multicast は `is_global` が True を返すため別途除外する。
+- **リダイレクトは手動追従**し、毎ホップ再検証する。urllib の自動追従に任せると
+  302 を 1 段挟むだけで上記チェックを完全に回避され、内部サービスの `<title>` を持ち出せる
+  （実際に検証で `127.0.0.1:5057` の `<title>` を奪取できることを確認 → 修正済み）。
+- **取得はリクエストスレッド外**（`ThreadPoolExecutor(max_workers=2)`, 上限 8 件待ち）。
+  同期取得のままだと遅い URL を並べるだけでワーカーを枯渇させられる。

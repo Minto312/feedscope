@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from flask import Flask, abort, jsonify, redirect, render_template, request, send_from_directory, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from ..db import connect, init_schema
 from . import queries
@@ -11,6 +12,9 @@ from .share import extract_url, save_shared
 
 def create_app(config) -> Flask:
     app = Flask(__name__)
+    # `tailscale serve` terminates TLS and forwards plain HTTP, so without this
+    # request.url_root would say http:// — wrong in the iOS Shortcut instructions.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     def by_name(name):
         for c in config.categories:
@@ -76,7 +80,8 @@ def create_app(config) -> Flask:
                     "add.html", saved=None, error=error,
                     categories=config.categories, counts=counts,
                 )
-            result = save_shared(conn, url, title=title, note=src.get("text"))
+            result = save_shared(conn, url, title=title, note=src.get("text"),
+                                 db_path=config.db_path)
         finally:
             conn.close()
 
