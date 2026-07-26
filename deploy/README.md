@@ -14,12 +14,24 @@ classify は 1 件あたり約 9 秒。1 回 20 件 ≒ 3 分、1 日あたり�
 ## インストール
 
 ```sh
+./deploy/install.sh              # 3 ユニットを配置して有効化
+./deploy/install.sh --no-serve   # 常駐ビューアなし（タイマーだけ）
+```
+
+チェックアウト先と `uv` の絶対パスはスクリプトが書き換えるので、別マシン・別ディレクトリでもそのまま動く。
+手で置く場合は:
+
+```sh
 mkdir -p ~/.config/systemd/user
 cp deploy/feedscope-*.{service,timer} ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now feedscope-collect.timer feedscope-classify.timer
 systemctl --user enable --now feedscope-serve.service    # 常駐ビューア
 ```
+
+> **ユニットは dotfiles で管理しない。** マシン固有の絶対パスを含むため、
+> `~/dotfiles/.gitignore` で `.config/systemd/user/feedscope-*` を除外し、
+> **この repo の `deploy/` を正として再作成する**運用にしている。
 
 パスが `/home/karinto/workspace/feedscope` 前提なので、別の場所に置く場合は
 `.service` の `WorkingDirectory` と `ExecStart`（`uv` の絶対パス）を書き換える。
