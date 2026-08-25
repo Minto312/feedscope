@@ -1,1 +1,1 @@
-"""classifier — classify and score articles by running `codex exec` as a subprocess."""
+"""classifier — classify and score articles by batching them through the `agy` CLI."""
