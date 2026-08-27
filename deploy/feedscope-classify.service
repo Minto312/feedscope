@@ -10,12 +10,17 @@ WorkingDirectory=/home/karinto/workspace/feedscope
 # systemd --user starts with a minimal PATH that lacks ~/.local/bin, where the
 # agy CLI lives. Without this the whole batch fails with "No such file: agy".
 Environment=PATH=/home/karinto/.local/bin:/usr/local/bin:/usr/bin:/bin
-# Fair share across categories (5 x 4 = 20 articles per run), newest first so
+# Fair share across categories (20 x 5 groups = 最大 100 articles per run。
+# 群はカテゴリ 4 つ + shared)、newest first so
 # today's news gets ranked before the older backlog.
+#
+# 2026-08-27 に 5 → 20 へ上げた。48h の実測で収集 2,364 件/日 に対し分類が
+# 1,130 件/日 しかなく、未分類が 1 日 +1,234 件で発散していたため
+# (machine の services/feedscope.md)。100 件/回 なら 4,800 件/日 で純減 2,436 件/日。
 # 1 回の実行が agy 1 呼び出しにまとまるので、以前ほど記事数を絞る必要はない
 # (実測: 20 記事 = Gemini 週次の 0.031%)。増やすなら classifier.batch_size と
 # 合わせて調整する。
-ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml classify --per-category 5 --order newest
+ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml classify --per-category 20 --order newest
 # ~9s per article; cap a stuck/retrying run rather than letting it pile up.
 TimeoutStartSec=25min
 Nice=10
