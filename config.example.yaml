@@ -135,7 +135,7 @@ classifier:
   #   codex … 旧実装。1 記事 1 プロセス。切り戻し用。
   backend: "agy"
   command: "agy"             # 呼び出すコマンド名 (codex バックエンドなら "codex")
-  model: "gemini-3.7-flash-high"  # agy: --model に渡す。codex なら "gpt-5.4" 等
+  model: "gemini-3.8-flash-high"  # agy: --model に渡す (`agy models` にある名前。予告なく消える)。codex なら "gpt-5.4" 等
   batch_size: 25             # agy: 1 回の呼び出しに載せる記事数 (argv 96KiB で自動分割)
   timeout: 600               # agy: 1 回の呼び出しの上限秒
   max_retries: 2             # JSON パース/検証に失敗したときのリトライ上限
