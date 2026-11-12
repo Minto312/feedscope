@@ -8,8 +8,8 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/home/karinto/workspace/feedscope
 Environment=PATH=/home/karinto/.local/bin:/usr/local/bin:/usr/bin:/bin
-# 0.0.0.0 so it is reachable over the tailnet / LAN, not just localhost.
-ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml serve --host 0.0.0.0 --port 5057
+# loopback only. tailnet からは Tailscale Services (svc:feedscope -> 127.0.0.1:5057) 経由でだけ届く。LAN には出さない
+ExecStart=/home/karinto/.local/bin/uv run feedscope --config config.yaml serve --host 127.0.0.1 --port 5057
 Restart=on-failure
 RestartSec=5s
 

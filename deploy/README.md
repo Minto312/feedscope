@@ -6,7 +6,7 @@ feedscope を放っておいても回るようにする systemd **user** ユニ�
 |---|---|---|---|
 | `feedscope-collect` | timer 20分毎 (`*:0/20`) | 57ソースを取得して SQLite に追記 | ネットワークのみ・無料 |
 | `feedscope-classify` | timer 30分毎 (`*:10/30`) | codex で **各分野5件ずつ=20件** を採点（新着優先） | **時間 + ChatGPT クォータ** |
-| `feedscope-serve` | 常駐 | web ビューア (`0.0.0.0:5057`)。異常終了時は自動再起動 | 常駐・軽量 |
+| `feedscope-serve` | 常駐 | web ビューア (`127.0.0.1:5057`。tailnet へは `tailscale serve` で出す)。異常終了時は自動再起動 | 常駐・軽量 |
 
 classify は 1 件あたり約 9 秒。1 回 20 件 ≒ 3 分、1 日あたり最大 ~960 件。
 クォータが気になる場合は `.service` の `--per-category` を減らすか、`.timer` の間隔を延ばす。
